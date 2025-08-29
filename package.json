@@ -1,0 +1,59 @@
+{
+  "name": "namma-kadai-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Namma Kadai - A modern e-commerce platform with user authentication and MongoDB integration",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:nodemon": "nodemon dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postbuild": "echo 'Build completed successfully'"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "typescript",
+    "authentication",
+    "jwt",
+    "api",
+    "backend",
+    "ecommerce"
+  ],
+  "author": "3dotart <team3dotart@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/3dotart/namma-kadai-backend.git"
+  },
+  "homepage": "https://github.com/3dotart/namma-kadai-backend#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "@types/mongoose": "^5.11.96",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "nodemon": "^3.1.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  }
+}
