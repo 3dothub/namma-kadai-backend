@@ -5,12 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc && npm run copy-public",
-    "copy-public": "xcopy public dist\\public /E /I /Y 2>nul || cp -r public dist/ 2>/dev/null || echo 'Public files copied'",
-    "start": "node dist/index.js",
-    "start:nodemon": "nodemon dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postbuild": "echo 'Build completed successfully'"
+    "build": "tsc --outDir public && echo 'Build completed successfully'",
+    "start": "node public/index.js",
+    "start:nodemon": "nodemon public/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "nodejs",
