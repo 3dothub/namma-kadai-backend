@@ -55,6 +55,12 @@ mongoose.connect(process.env.MONGODB_URI!)
     console.error('MongoDB connection error:', err);
   });
 
-app.listen(serverPort, "0.0.0.0", () => {
-  console.log(`Server is running on port ${serverPort}`);
-});
+// Only start the server if this file is run directly (not imported)
+if (require.main === module) {
+  app.listen(serverPort, "0.0.0.0", () => {
+    console.log(`Server is running on port ${serverPort}`);
+  });
+}
+
+// Export the app for Vercel
+export default app;
