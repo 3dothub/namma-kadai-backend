@@ -1,126 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Namma Kadai Backend API</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
-            background: #f8f9fa;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #007acc;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        .endpoint {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
-            border-left: 4px solid #007acc;
-        }
-        .status {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-        }
-        .endpoint h3 {
-            margin: 0 0 10px 0;
-            color: #007acc;
-        }
-        pre {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-size: 0.9em;
-        }
-        .url {
-            background: #007acc;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        line-height: 1.6;
+        color: #333;
+        background: #f8f9fa;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #007acc;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .endpoint {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #007acc;
+      }
+      .status {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 5px;
+        text-align: center;
+        margin-bottom: 20px;
+        border: 1px solid #c3e6cb;
+      }
+      .endpoint h3 {
+        margin: 0 0 10px 0;
+        color: #007acc;
+      }
+      pre {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.9em;
+      }
+      .url {
+        background: #007acc;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>🚀 Namma Kadai Backend API</h1>
-            <p>A modern, secure backend API for e-commerce applications</p>
-        </div>
+      <div class="header">
+        <h1>🚀 Namma Kadai Backend API</h1>
+      </div>
 
-        <div class="status">
-            ✅ API is running successfully on Vercel!
-        </div>
-
-        <h2>📍 Available Endpoints:</h2>
-        
-        <div class="endpoint">
-            <h3>🔍 Health Check</h3>
-            <p><strong>GET</strong> <span class="url">/health</span></p>
-            <p>Check if the API is running</p>
-            <p><a href="/health" target="_blank">Test Health Check →</a></p>
-        </div>
-
-        <div class="endpoint">
-            <h3>👤 User Registration</h3>
-            <p><strong>POST</strong> <span class="url">/auth/register</span></p>
-            <p>Register a new user account</p>
-            <pre>{ 
-  "name": "John Doe", 
+      <div class="endpoint">
+        <h3>🔐 User Login</h3>
+        <p><strong>POST</strong> <span class="url">/auth/login</span></p>
+        <p>Authenticate user and get JWT token</p>
+        <pre>
+{ 
   "email": "john@example.com", 
   "password": "securepassword" 
-}</pre>
-        </div>
+}</pre
+        >
+      </div>
 
-        <div class="endpoint">
-            <h3>🔐 User Login</h3>
-            <p><strong>POST</strong> <span class="url">/auth/login</span></p>
-            <p>Authenticate user and get JWT token</p>
-            <pre>{ 
-  "email": "john@example.com", 
-  "password": "securepassword" 
-}</pre>
-        </div>
+      <h2>🛠️ Technologies Used:</h2>
+      <ul>
+        <li>⚡ Node.js & Express.js</li>
+        <li>🗄️ MongoDB with Mongoose</li>
+        <li>🔒 JWT Authentication</li>
+        <li>🛡️ bcrypt Password Hashing</li>
+        <li>📱 CORS Enabled</li>
+        <li>💾 TypeScript</li>
+        <li>☁️ Deployed on Vercel</li>
+      </ul>
 
-        <h2>🛠️ Technologies Used:</h2>
-        <ul>
-            <li>⚡ Node.js & Express.js</li>
-            <li>🗄️ MongoDB with Mongoose</li>
-            <li>🔒 JWT Authentication</li>
-            <li>🛡️ bcrypt Password Hashing</li>
-            <li>📱 CORS Enabled</li>
-            <li>💾 TypeScript</li>
-            <li>☁️ Deployed on Vercel</li>
-        </ul>
+      <h2>📡 Base URL:</h2>
+      <p>
+        <strong>Production:</strong>
+        <span class="url">https://namma-kadai-backend.vercel.app</span>
+      </p>
 
-        <h2>📡 Base URL:</h2>
-        <p><strong>Production:</strong> <span class="url">https://namma-kadai-backend.vercel.app</span></p>
-
-        <p style="text-align: center; margin-top: 40px; color: #666;">
-            Made with ❤️ by 3dotart
-        </p>
+      <p style="text-align: center; margin-top: 40px; color: #666">
+        Made with ❤️ by 3dotart
+      </p>
     </div>
-</body>
+  </body>
 </html>
