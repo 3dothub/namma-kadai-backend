@@ -18,10 +18,9 @@ app.use(
 
 app.use(express.json());
 
-// Serve static files and handle root route
-app.use(express.static(path.join(__dirname)));
+// Basic welcome route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.json({ message: 'Welcome to Namma Kadai API' });
 });
 
 import routes from "./routes";
