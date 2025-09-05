@@ -24,13 +24,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-import authRoutes from "./routes/auth.routes";
+import routes from "./routes";
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use("/auth", authRoutes);
+// Use all routes
+app.use("/", routes);
 
 app.use(
   (

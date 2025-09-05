@@ -111,3 +111,93 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Login failed. Please try again." });
   }
 };
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Please provide an email address" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // TODO: Implement email sending logic here
+    // For now, we'll just return a success message
+    res.json({ 
+      message: "You will receive password reset instructions." 
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ 
+      message: "Could not process password reset request. Please try again." 
+    });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ 
+        message: "Please provide both email and verification code" 
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // TODO: Implement OTP verification logic here
+    // For now, we'll just return a success message
+    res.json({ 
+      message: "Email verified successfully" 
+    });
+  } catch (error) {
+    console.error("Email verification error:", error);
+    res.status(500).json({ 
+      message: "Could not verify email. Please try again." 
+    });
+  }
+};
+
+export const authenticateToken = async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET || "your-super-secret-key123", async (err: any, decoded: any) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      const user = await User.findById(decoded.userId).select('-password');
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        valid: true,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({ 
+      message: "Could not verify token. Please try again." 
+    });
+  }
+};
