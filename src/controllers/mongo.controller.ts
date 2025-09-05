@@ -1,9 +1,39 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
+async function connectToMongoDB() {
+  try {
+    // Close any existing connection first
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+
+    // Configure mongoose
+    mongoose.set('strictQuery', true);
+    
+    // Connect with specific options
+    await mongoose.connect(process.env.MONGODB_URI!, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      maxPoolSize: 10,
+      retryWrites: true,
+      dbName: 'namma_kadai'
+    });
+
+    return true;
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    return false;
+  }
+}
+
 export const testMongoConnection = async (req: Request, res: Response) => {
   try {
-    // Check the current connection state
+    // Force a new connection attempt
+    const connected = await connectToMongoDB();
+    
+    // Get current state after connection attempt
     const state = mongoose.connection.readyState;
     const stateMap = {
       0: "disconnected",
@@ -19,60 +49,49 @@ export const testMongoConnection = async (req: Request, res: Response) => {
       name: mongoose.connection.name,
       port: mongoose.connection.port,
       readyState: state,
+      actuallyConnected: connected,
       mongodb_uri: process.env.MONGODB_URI ? 
         process.env.MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@') : 
         'not set'
     };
 
-    // Try to connect if not connected
-    if (state !== 1) {
+    // Only proceed if we're actually connected
+    if (connected && state === 1 && mongoose.connection.db) {
       try {
-        await mongoose.connect(process.env.MONGODB_URI!, {
-          connectTimeoutMS: 10000,
-          serverSelectionTimeoutMS: 10000
+        // Try a simple ping operation with timeout
+        await mongoose.connection.db.admin().ping();
+        
+        // If ping successful, get collections
+        const collections = await mongoose.connection.db.listCollections().toArray();
+        
+        return res.json({
+          status: "success",
+          connection: connectionInfo,
+          collections: collections.map(col => col.name),
+          ping: "successful"
         });
-        connectionInfo.state = "connected";
-      } catch (connError) {
+      } catch (dbError) {
         return res.status(500).json({
           status: "error",
-          message: "Failed to connect to database",
+          message: "Database operation failed",
           connection: connectionInfo,
-          error: connError instanceof Error ? connError.message : "Unknown connection error"
+          error: dbError instanceof Error ? dbError.message : "Unknown database error"
         });
       }
     }
 
-    if (mongoose.connection.db) {
-      // If connected, try a simple operation
-      const collections = await mongoose.connection.db.listCollections().toArray();
-      const stats = await mongoose.connection.db.stats();
-      
-      return res.json({
-        status: "success",
-        connection: connectionInfo,
-        collections: collections.map(col => col.name),
-        stats: {
-          collections: stats.collections,
-          indexes: stats.indexes,
-          objects: stats.objects
-        }
-      });
-    }
-
-    res.status(500).json({
+    // If we reach here, we're not properly connected
+    return res.status(500).json({
       status: "error",
-      message: "Database not connected",
+      message: "Database not properly connected",
       connection: connectionInfo
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
-      message: error instanceof Error ? error.message : "Unknown error",
-      connection: {
-        state: "error",
-        error: error instanceof Error ? error.message : "Unknown error"
-      }
+      message: "Connection test failed",
+      error: error instanceof Error ? error.message : "Unknown error"
     });
   }
 };

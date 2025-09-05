@@ -46,44 +46,48 @@ app.use(
 
 const serverPort = typeof port === "string" ? parseInt(port) : port;
 
-// Connect to MongoDB with retry logic
-const connectWithRetry = async () => {
+// Connect to MongoDB
+const connectToMongoDB = async () => {
   try {
+    // Close any existing connection first
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+
+    // Configure mongoose
+    mongoose.set('strictQuery', true);
+    
+    // Connect with specific options
     await mongoose.connect(process.env.MONGODB_URI!, {
-      connectTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 30000, // 30 seconds
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-      family: 4, // Use IPv4, skip trying IPv6
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
       maxPoolSize: 10,
-      minPoolSize: 3,
       retryWrites: true,
-      retryReads: true,
-      w: 'majority',
-      readPreference: 'primary'
+      dbName: 'namma_kadai'
     });
-    console.log('Connected to MongoDB');
+
+    console.log('MongoDB connected successfully');
+    
+    return true;
   } catch (err) {
     console.error('MongoDB connection error:', err);
-    // Wait for 5 seconds before retrying
-    setTimeout(connectWithRetry, 5000);
+    return false;
   }
 };
 
 // Initial connection
-connectWithRetry();
+connectToMongoDB();
 
 // Handle connection events
-mongoose.connection.on('connected', () => {
-  console.log('MongoDB connection established');
-});
-
 mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
+  console.error('MongoDB error:', err);
+  setTimeout(connectToMongoDB, 5000);
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB connection disconnected, attempting to reconnect...');
-  connectWithRetry();
+  console.log('MongoDB disconnected, attempting to reconnect...');
+  setTimeout(connectToMongoDB, 5000);
 });
 
 // Only start the server if this file is run directly (not imported)
