@@ -40,7 +40,7 @@ const userSchema = new Schema<IUser>({
   },
   phone: {
     type: String,
-    required: true
+    required: false
   },
   password: {
     type: String,
@@ -49,19 +49,19 @@ const userSchema = new Schema<IUser>({
     select: true // Make sure password is included by default
   },
   addresses: [{
-    label: { type: String, required: true },
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    pincode: { type: String, required: true },
+    label: { type: String, required: false },
+    street: { type: String, required: false },
+    city: { type: String, required: false },
+    state: { type: String, required: false },
+    pincode: { type: String, required: false },
     location: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true }
+      lat: { type: Number, required: false },
+      lng: { type: Number, required: false }
     }
   }],
   cart: [{
-    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    quantity: { type: Number, required: true, min: 1 }
+    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: false },
+    quantity: { type: Number, required: false, min: 1 }
   }]
 }, {
   timestamps: true
