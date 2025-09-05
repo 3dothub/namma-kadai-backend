@@ -65,9 +65,8 @@ export const testMongoConnection = async (req: Request, res: Response) => {
       } catch (dbError) {
         return res.status(500).json({
           status: "error",
-          message: "Database operation failed",
-          connection: connectionInfo,
-          error: dbError instanceof Error ? dbError.message : "Unknown database error"
+          message: dbError instanceof Error ? dbError.message : "Unknown database error",
+          connection: connectionInfo
         });
       }
     }
@@ -81,8 +80,7 @@ export const testMongoConnection = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "Connection test failed",
-      error: error instanceof Error ? error.message : "Unknown error"
+      message: error instanceof Error ? error.message : "Unknown error"
     });
   }
 };

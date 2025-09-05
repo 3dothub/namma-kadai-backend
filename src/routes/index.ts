@@ -7,7 +7,6 @@ import orderRoutes from './order.routes';
 import notificationRoutes from './notification.routes';
 import paymentRoutes from './payment.routes';
 import reviewRoutes from './review.routes';
-import mongoRoutes from './mongo.routes';
 
 const router = express.Router();
 
@@ -25,6 +24,5 @@ router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/reviews', reviewRoutes);
-router.use('/mongo', mongoRoutes);
 
 export default router;
