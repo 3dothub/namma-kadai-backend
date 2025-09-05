@@ -3,15 +3,12 @@ import mongoose from "mongoose";
 
 async function connectToMongoDB() {
   try {
-    // Close any existing connection first
     if (mongoose.connection.readyState !== 0) {
       await mongoose.connection.close();
     }
 
-    // Configure mongoose
     mongoose.set('strictQuery', true);
-    
-    // Connect with specific options
+
     await mongoose.connect(process.env.MONGODB_URI!, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
@@ -30,10 +27,9 @@ async function connectToMongoDB() {
 
 export const testMongoConnection = async (req: Request, res: Response) => {
   try {
-    // Force a new connection attempt
+
     const connected = await connectToMongoDB();
     
-    // Get current state after connection attempt
     const state = mongoose.connection.readyState;
     const stateMap = {
       0: "disconnected",
@@ -42,7 +38,6 @@ export const testMongoConnection = async (req: Request, res: Response) => {
       3: "disconnecting"
     };
 
-    // Get connection information
     const connectionInfo = {
       state: stateMap[state as keyof typeof stateMap],
       host: mongoose.connection.host,
@@ -55,13 +50,10 @@ export const testMongoConnection = async (req: Request, res: Response) => {
         'not set'
     };
 
-    // Only proceed if we're actually connected
     if (connected && state === 1 && mongoose.connection.db) {
       try {
-        // Try a simple ping operation with timeout
         await mongoose.connection.db.admin().ping();
         
-        // If ping successful, get collections
         const collections = await mongoose.connection.db.listCollections().toArray();
         
         return res.json({
@@ -80,7 +72,6 @@ export const testMongoConnection = async (req: Request, res: Response) => {
       }
     }
 
-    // If we reach here, we're not properly connected
     return res.status(500).json({
       status: "error",
       message: "Database not properly connected",

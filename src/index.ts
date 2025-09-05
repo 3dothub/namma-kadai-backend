@@ -18,9 +18,8 @@ app.use(
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname)));
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 import routes from "./routes";
@@ -43,19 +42,20 @@ app.use(
   }
 );
 
-const serverPort = typeof port === "string" ? parseInt(port) : port;
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI not set");
 
-mongoose.connect(process.env.MONGODB_URI!)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+  const db = await mongoose.connect(process.env.MONGODB_URI);
+  isConnected = db.connections[0].readyState === 1;
+  console.log("MongoDB connected");
+}
+connectDB().catch(console.error);
 
 if (require.main === module) {
-  app.listen(serverPort, "0.0.0.0", () => {
-    console.log(`Server is running on port ${serverPort}`);
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
   });
 }
 
