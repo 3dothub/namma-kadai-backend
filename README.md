@@ -165,7 +165,10 @@ npm test
    npm start
    ```
 
-## 🚀 Deployment
+## � Base URL
+**Production:** `https://api-namma-kadai.vercel.app`
+
+## �🚀 Deployment
 
 ### Environment Variables for Production
 Make sure to set these environment variables in your production environment:
