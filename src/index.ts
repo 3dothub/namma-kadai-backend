@@ -19,7 +19,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.json({ status: "Welcome to Namma Kadai" });
 });
 
 import routes from "./routes";
