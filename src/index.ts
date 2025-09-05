@@ -18,10 +18,9 @@ app.use(
 
 app.use(express.json());
 
-// Serve static files and handle root route
-app.use(express.static(path.join(__dirname, '../')));
+// Basic welcome route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
+  res.json({ message: 'Welcome to Namma Kadai API' });
 });
 
 import routes from "./routes";
@@ -48,18 +47,27 @@ app.use(
 const serverPort = typeof port === "string" ? parseInt(port) : port;
 
 // Connect to MongoDB with proper configurations
+console.log('Attempting to connect to MongoDB...');
+console.log('MongoDB URI:', process.env.MONGODB_URI ? 'URI is set' : 'URI is missing');
+
 mongoose.connect(process.env.MONGODB_URI!, {
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-  socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-  maxPoolSize: 50, // Maintain up to 50 socket connections
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  maxPoolSize: 10,
+  retryWrites: true,
+  w: 'majority'
 })
 .then(() => {
-  console.log('Connected to MongoDB');
+  console.log('Successfully connected to MongoDB');
 })
 .catch((err) => {
-  console.error('MongoDB connection error:', err);
-  // Exit process with failure if connection is required
+  console.error('MongoDB connection error details:', {
+    name: err.name,
+    message: err.message,
+    stack: err.stack
+  });
   if (process.env.NODE_ENV === 'production') {
+    console.error('Fatal: Could not connect to MongoDB in production');
     process.exit(1);
   }
 });
