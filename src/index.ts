@@ -19,9 +19,9 @@ app.use(
 app.use(express.json());
 
 // Serve static files and handle root route
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, '../')));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 import routes from "./routes";
