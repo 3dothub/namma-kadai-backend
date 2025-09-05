@@ -47,14 +47,49 @@ app.use(
 
 const serverPort = typeof port === "string" ? parseInt(port) : port;
 
+// Connect to MongoDB with serverless-friendly configuration
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+
+    const options: mongoose.ConnectOptions = {
+      serverSelectionTimeoutMS: 15000, // Timeout after 15 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      family: 4, // Use IPv4, skip trying IPv6
+      maxPoolSize: 50, // Maintain up to 50 socket connections
+      serverApi: { version: '1' as const },
+    };
+
+    await mongoose.connect(process.env.MONGODB_URI, options);
+    console.log('MongoDB connected successfully');
+    
+    // Add connection error handler
+    mongoose.connection.on('error', (err) => {
+      console.error('MongoDB connection error:', err);
+    });
+
+    // Add disconnection handler
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected. Attempting to reconnect...');
+    });
+
+  } catch (error: any) {
+    console.error('MongoDB connection error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    if (process.env.NODE_ENV === 'production') {
+      // In production, we want to know about connection failures immediately
+      throw error;
+    }
+  }
+};
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI!)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+connectDB();
 
 // Only start the server if this file is run directly (not imported)
 if (require.main === module) {
