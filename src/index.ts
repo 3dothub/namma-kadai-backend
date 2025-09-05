@@ -47,14 +47,22 @@ app.use(
 
 const serverPort = typeof port === "string" ? parseInt(port) : port;
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI!)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+// Connect to MongoDB with proper configurations
+mongoose.connect(process.env.MONGODB_URI!, {
+  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+  socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+  maxPoolSize: 50, // Maintain up to 50 socket connections
+})
+.then(() => {
+  console.log('Connected to MongoDB');
+})
+.catch((err) => {
+  console.error('MongoDB connection error:', err);
+  // Exit process with failure if connection is required
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
 
 // Only start the server if this file is run directly (not imported)
 if (require.main === module) {
