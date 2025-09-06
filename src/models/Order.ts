@@ -55,8 +55,7 @@ const OrderSchema: Schema = new Schema({
     location: {
       lat: { type: Number },
       lng: { type: Number }
-    },
-    required: false
+    }
   },
   status: {
     type: String,
