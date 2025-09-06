@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPayment extends Document {
   orderId: mongoose.Types.ObjectId;
-  method: 'COD' | 'UPI' | 'Card';
+  method: 'COD';
   transactionId?: string;
   amount: number;
   status: 'pending' | 'success' | 'failed';
@@ -13,8 +13,9 @@ const PaymentSchema: Schema = new Schema({
   orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
   method: { 
     type: String,
-    enum: ['COD', 'UPI', 'Card'],
-    required: true
+    enum: ['COD'],
+    required: true,
+    default: 'COD'
   },
   transactionId: { type: String },
   amount: { type: Number, required: true },

@@ -11,7 +11,8 @@ export interface IOrder extends Document {
   }[];
   totalAmount: number;
   paymentStatus: 'pending' | 'paid' | 'failed';
-  deliveryAddress: {
+  orderType: 'delivery' | 'takeaway';
+  deliveryAddress?: {
     street: string;
     city: string;
     state: string;
@@ -41,15 +42,21 @@ const OrderSchema: Schema = new Schema({
     enum: ['pending', 'paid', 'failed'],
     default: 'pending'
   },
+  orderType: {
+    type: String,
+    enum: ['delivery', 'takeaway'],
+    required: true
+  },
   deliveryAddress: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    pincode: { type: String, required: true },
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    pincode: { type: String },
     location: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true }
-    }
+      lat: { type: Number },
+      lng: { type: Number }
+    },
+    required: false
   },
   status: {
     type: String,

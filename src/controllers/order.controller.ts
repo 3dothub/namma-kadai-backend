@@ -2,17 +2,43 @@ import { Request, Response } from 'express';
 import { Order } from '../models/Order';
 import { User } from '../models/User';
 import { Product } from '../models/Product';
+import { Vendor } from '../models/Vendor';
 import { Notification } from '../models/Notification';
 
 // Place order
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
-    const { vendorId, items, deliveryAddress } = req.body;
+    const { vendorId, items, deliveryAddress, orderType = 'delivery' } = req.body as { 
+      vendorId: string;
+      items: any[];
+      deliveryAddress?: any;
+      orderType: 'delivery' | 'takeaway';
+    };
 
-    if (!vendorId || !items || !items.length || !deliveryAddress) {
+    if (!vendorId || !items || !items.length) {
       return res.status(400).json({ 
-        message: 'Please provide vendor, items and delivery address' 
+        message: 'Please provide vendor and items' 
+      });
+    }
+
+    // Check if vendor exists and supports the requested order type
+    const vendor = await Vendor.findById(vendorId);
+    if (!vendor) {
+      return res.status(404).json({ 
+        message: 'Vendor not found' 
+      });
+    }
+
+    if (!vendor.serviceTypes[orderType]) {
+      return res.status(400).json({ 
+        message: `This vendor does not support ${orderType} orders` 
+      });
+    }
+
+    if (orderType === 'delivery' && !deliveryAddress) {
+      return res.status(400).json({ 
+        message: 'Please provide delivery address for delivery orders' 
       });
     }
 
@@ -43,7 +69,8 @@ export const createOrder = async (req: Request, res: Response) => {
       vendorId,
       items,
       totalAmount,
-      deliveryAddress,
+      orderType,
+      ...(orderType === 'delivery' && { deliveryAddress }),
       status: 'pending',
       paymentStatus: 'pending'
     });
