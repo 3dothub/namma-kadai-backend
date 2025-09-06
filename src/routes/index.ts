@@ -7,15 +7,13 @@ import orderRoutes from './order.routes';
 import notificationRoutes from './notification.routes';
 import paymentRoutes from './payment.routes';
 import reviewRoutes from './review.routes';
+import favoriteRoutes from './favorite.routes';
 
 const router = express.Router();
 
-// Welcome route
 router.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Namma Kadai API' });
 });
-
-// Mount all routes
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 router.use('/vendors', vendorRoutes);
@@ -24,5 +22,6 @@ router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/favorites', favoriteRoutes);
 
 export default router;

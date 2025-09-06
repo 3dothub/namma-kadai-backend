@@ -21,6 +21,7 @@ export interface IUser extends Document {
     productId: mongoose.Types.ObjectId;
     quantity: number;
   }>;
+  favorites: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,6 +63,10 @@ const userSchema = new Schema<IUser>({
   cart: [{
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     quantity: { type: Number, required: true, min: 1 }
+  }],
+  favorites: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Product'
   }]
 }, {
   timestamps: true

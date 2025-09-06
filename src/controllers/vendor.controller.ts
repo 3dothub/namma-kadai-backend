@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import { Vendor } from '../models/Vendor';
 import { Product } from '../models/Product';
 
-// Get all vendors or nearby vendors
 export const getAllVendors = async (req: Request, res: Response) => {
   try {
-    const { city, isActive, lat, lng } = req.query;
+    const { city, isActive, lat, lng, radius } = req.query;
     
     let query: any = {};
     
@@ -13,13 +12,17 @@ export const getAllVendors = async (req: Request, res: Response) => {
     if (lat && lng) {
       const latitude = parseFloat(lat as string);
       const longitude = parseFloat(lng as string);
+      const searchRadius = radius ? parseFloat(radius as string) : 5; // Default to 5km if not specified
       
       if (isNaN(latitude) || isNaN(longitude)) {
         return res.status(400).json({ message: 'Invalid coordinates' });
       }
 
-      // Find all vendors within max possible delivery radius (e.g., 20km)
-      // We'll filter based on individual vendor's radius later
+      if (radius && isNaN(searchRadius)) {
+        return res.status(400).json({ message: 'Invalid radius value' });
+      }
+
+      // Find all vendors within specified radius
       query = {
         ...query,
         'address.location': {
@@ -28,7 +31,7 @@ export const getAllVendors = async (req: Request, res: Response) => {
               type: 'Point',
               coordinates: [longitude, latitude]  // MongoDB uses [lng, lat] order
             },
-            $maxDistance: 20000  // 20km in meters - maximum possible coverage
+            $maxDistance: searchRadius * 1000  // Convert km to meters
           }
         }
       };

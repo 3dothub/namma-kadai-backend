@@ -13,12 +13,10 @@ import {
   getVendorProducts
 } from '../controllers/vendor.controller';
 
-// Vendor listing and details
 router.get('/', getAllVendors);
 router.get('/:id', getVendorDetails);
 router.post('/update-details', auth, updateVendorDetails);
 
-// Vendor products
 router.post('/products', auth, addProduct);
 router.patch('/products/:id', auth, updateProduct);
 router.delete('/products/:id', auth, deleteProduct);

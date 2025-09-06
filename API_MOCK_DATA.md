@@ -398,6 +398,70 @@ Success Response (200):
 }
 ```
 
+## Favorites APIs
+
+### 1. Get Favorites
+```http
+URL: /favorites
+Method: GET
+Authorization: Bearer <token>
+
+Success Response (200):
+{
+  "favorites": [
+    {
+      "id": "65123b4c89a7e3c12d4f5e23",
+      "name": "Fresh Tomatoes",
+      "price": 40,
+      "description": "Farm fresh tomatoes",
+      "images": ["https://example.com/tomatoes1.jpg"],
+      "unit": "kg",
+      "isActive": true,
+      "vendorId": {
+        "name": "Fresh Groceries",
+        "shopDetails": {
+          "logoUrl": "https://example.com/logo.png"
+        }
+      }
+    }
+  ],
+  "totalResults": 1
+}
+```
+
+### 2. Add to Favorites
+```http
+URL: /favorites/:productId
+Method: POST
+Authorization: Bearer <token>
+
+Success Response (200):
+{
+  "message": "Product added to favorites",
+  "favorites": [...],
+  "totalResults": 1
+}
+
+Error Response (404):
+{
+  "message": "Product not found or inactive"
+}
+```
+
+### 3. Remove from Favorites
+```http
+URL: /favorites/:productId
+Method: DELETE
+Authorization: Bearer <token>
+
+Success Response (200):
+{
+  "message": "Product removed from favorites",
+  "favorites": [...],
+  "totalResults": 0
+}
+```
+
 ## Reviews APIs
 
 ### 1. Add Review
