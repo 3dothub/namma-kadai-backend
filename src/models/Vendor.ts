@@ -22,6 +22,7 @@ export interface IVendor extends Document {
   };
   isActive: boolean;
   providesDelivery: boolean;
+  providesTakeAway: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +49,7 @@ const VendorSchema: Schema = new Schema({
   },
   isActive: { type: Boolean, default: true },
   providesDelivery: { type: Boolean, default: true },
+  providesTakeAway: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export const Vendor = mongoose.model<IVendor>('Vendor', VendorSchema);
