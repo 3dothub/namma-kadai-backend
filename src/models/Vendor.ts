@@ -5,6 +5,7 @@ export interface IVendor extends Document {
   ownerName: string;
   phone: string;
   email: string;
+  category: string;
   address: {
     street: string;
     city: string;
@@ -49,6 +50,7 @@ export interface IVendor extends Document {
 
 const VendorSchema: Schema = new Schema({
   name: { type: String, required: true },
+  category: { type: String, required: true },
   ownerName: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true, unique: true },
