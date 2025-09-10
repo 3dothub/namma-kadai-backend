@@ -36,11 +36,7 @@ export const register = async (req: Request, res: Response) => {
     res.status(201).json({
       message: "Account created successfully! Welcome!",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: user,
     });
   } catch (error) {
     res.status(500).json({
@@ -53,7 +49,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-
+    console.log("Login attempt for email:", email);
     if (!email || !password) {
       return res.status(400).json({ message: "Please enter email and password" });
     }
@@ -79,11 +75,7 @@ export const login = async (req: Request, res: Response) => {
     res.json({
       message: "Login successful! Welcome back!",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user: user,
     });
   } catch (error) {
     res.status(500).json({ message: "Login failed. Please try again." });

@@ -14,12 +14,16 @@ import {
 } from '../controllers/vendor.controller';
 
 router.get('/', getAllVendors);
-router.get('/:id', getVendorDetails);
-router.post('/update-details', auth, updateVendorDetails);
 
+// Place specific routes BEFORE parameterized routes
+router.get('/products', getVendorProducts);
 router.post('/products', auth, addProduct);
 router.patch('/products/:id', auth, updateProduct);
 router.delete('/products/:id', auth, deleteProduct);
-router.get('/products', getVendorProducts);
+
+router.post('/update-details', auth, updateVendorDetails);
+
+// Keep parameterized routes at the end
+router.get('/:id', getVendorDetails);
 
 export default router;

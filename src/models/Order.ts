@@ -23,6 +23,16 @@ export interface IOrder extends Document {
     };
   };
   status: 'pending' | 'confirmed' | 'dispatched' | 'delivered' | 'cancelled';
+  scheduleDetails?: {
+    isScheduled: boolean;
+    scheduledFor: Date;
+    scheduleType: 'immediate' | 'scheduled';
+    timeSlot?: {
+      startTime: string;
+      endTime: string;
+    };
+    specialInstructions?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +71,20 @@ const OrderSchema: Schema = new Schema({
     type: String,
     enum: ['pending', 'confirmed', 'dispatched', 'delivered', 'cancelled'],
     default: 'pending'
+  },
+  scheduleDetails: {
+    isScheduled: { type: Boolean, default: false },
+    scheduledFor: { type: Date },
+    scheduleType: {
+      type: String,
+      enum: ['immediate', 'scheduled'],
+      default: 'immediate'
+    },
+    timeSlot: {
+      startTime: { type: String },
+      endTime: { type: String }
+    },
+    specialInstructions: { type: String }
   }
 }, { timestamps: true });
 

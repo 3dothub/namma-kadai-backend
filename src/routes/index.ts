@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from "mongoose";
 import authRoutes from './auth.routes';
 import userRoutes from './user.routes';
 import vendorRoutes from './vendor.routes';
@@ -14,6 +15,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Namma Kadai API' });
 });
+
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 router.use('/vendors', vendorRoutes);

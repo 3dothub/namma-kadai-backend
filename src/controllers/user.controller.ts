@@ -23,7 +23,7 @@ export const getProfile = async (req: Request, res: Response) => {
 export const updateDetails = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
-    const { name, phone, addresses } = req.body;
+    const { name, phone, addresses, productId } = req.body;
 
     const user = await User.findByIdAndUpdate(
       userId,

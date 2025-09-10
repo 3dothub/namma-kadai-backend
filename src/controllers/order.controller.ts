@@ -8,12 +8,30 @@ import { Notification } from '../models/Notification';
 // Place order
 export const createOrder = async (req: Request, res: Response) => {
   try {
+    console.log('Creating order with data:', JSON.stringify(req.body, null, 2));
+    
     const userId = (req as any).user.userId;
-    const { vendorId, items, deliveryAddress, orderType = 'delivery' } = req.body as { 
+    const { 
+      vendorId, 
+      items, 
+      deliveryAddress, 
+      orderType = 'delivery',
+      scheduleDetails 
+    } = req.body as { 
       vendorId: string;
       items: any[];
       deliveryAddress?: any;
       orderType: 'delivery' | 'takeaway';
+      scheduleDetails?: {
+        isScheduled: boolean;
+        scheduledFor?: Date;
+        scheduleType: 'immediate' | 'scheduled';
+        timeSlot?: {
+          startTime: string;
+          endTime: string;
+        };
+        specialInstructions?: string;
+      };
     };
 
     if (!vendorId || !items || !items.length) {
@@ -42,8 +60,25 @@ export const createOrder = async (req: Request, res: Response) => {
       });
     }
 
+    // Validate schedule details if provided
+    if (scheduleDetails?.isScheduled) {
+      if (!scheduleDetails.scheduledFor) {
+        return res.status(400).json({ 
+          message: 'Scheduled date is required for scheduled orders' 
+        });
+      }
+      
+      const scheduledDate = new Date(scheduleDetails.scheduledFor);
+      if (scheduledDate <= new Date()) {
+        return res.status(400).json({ 
+          message: 'Scheduled date must be in the future' 
+        });
+      }
+    }
+
     // Calculate total amount and verify stock
     let totalAmount = 0;
+    const processedItems = [];
     for (const item of items) {
       const product = await Product.findById(item.productId);
       if (!product || !product.isActive) {
@@ -58,35 +93,69 @@ export const createOrder = async (req: Request, res: Response) => {
       }
       totalAmount += product.price * item.quantity;
 
+      // Add processed item with product details
+      processedItems.push({
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: item.quantity
+      });
+
       // Update stock
       product.stock -= item.quantity;
       await product.save();
     }
 
     // Create order
-    const order = await Order.create({
+    const orderData: any = {
       userId,
       vendorId,
-      items,
+      items: processedItems,
       totalAmount,
       orderType,
-      ...(orderType === 'delivery' && { deliveryAddress }),
       status: 'pending',
       paymentStatus: 'pending'
-    });
+    };
+
+    // Add delivery address if delivery order
+    if (orderType === 'delivery' && deliveryAddress) {
+      orderData.deliveryAddress = deliveryAddress;
+    }
+
+    // Add schedule details if provided
+    if (scheduleDetails) {
+      orderData.scheduleDetails = {
+        isScheduled: scheduleDetails.isScheduled || false,
+        scheduleType: scheduleDetails.scheduleType || 'immediate',
+        ...(scheduleDetails.scheduledFor && { scheduledFor: scheduleDetails.scheduledFor }),
+        ...(scheduleDetails.timeSlot && { timeSlot: scheduleDetails.timeSlot }),
+        ...(scheduleDetails.specialInstructions && { specialInstructions: scheduleDetails.specialInstructions })
+      };
+    }
+
+    const order = await Order.create(orderData);
+    console.log('Order created successfully:', order._id);
 
     // Create notifications
+    const orderMessage = scheduleDetails?.isScheduled 
+      ? `Your scheduled order #${order._id} has been placed for ${new Date(scheduleDetails.scheduledFor!).toLocaleDateString()}.`
+      : `Your order #${order._id} has been placed successfully.`;
+
     await Notification.create({
       userId,
       title: 'Order Placed',
-      message: `Your order #${order._id} has been placed successfully.`,
+      message: orderMessage,
       type: 'order_update'
     });
+
+    const vendorMessage = scheduleDetails?.isScheduled
+      ? `You have received a new scheduled order #${order._id} for ${new Date(scheduleDetails.scheduledFor!).toLocaleDateString()}.`
+      : `You have received a new order #${order._id}.`;
 
     await Notification.create({
       vendorId,
       title: 'New Order',
-      message: `You have received a new order #${order._id}.`,
+      message: vendorMessage,
       type: 'order_update'
     });
 
@@ -97,13 +166,40 @@ export const createOrder = async (req: Request, res: Response) => {
       await user.save();
     }
 
+    // Populate order details for response
+    const populatedOrder = await Order.findById(order._id)
+      .populate('vendorId', 'name phone address')
+      .populate('items.productId', 'name images');
+
     res.status(201).json({
+      success: true,
       message: 'Order placed successfully',
-      order
+      order: populatedOrder
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create order error:', error);
-    res.status(500).json({ message: 'Error creating order' });
+    
+    // Check for specific MongoDB errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Validation error', 
+        details: error.message 
+      });
+    }
+    
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid ID format' 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false,
+      message: 'Error creating order',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
